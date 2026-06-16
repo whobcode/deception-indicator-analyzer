@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Deception Analyzer</title>
+<meta name="description" content="Acoustic voice-stress & deception indicator analysis (heuristic, not validated)." />
+<style>
+  :root {
+    --bg: #0b0f17; --panel: #141a26; --panel2: #1c2433; --line: #263041;
+    --text: #e6ebf2; --muted: #8b98ad; --accent: #5b8cff;
+    --low: #34d399; --medium: #fbbf24; --high: #f87171;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: radial-gradient(1200px 600px at 50% -10%, #18233a 0%, var(--bg) 60%);
+    color: var(--text); font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    min-height: 100vh;
+  }
+  .wrap { max-width: 840px; margin: 0 auto; padding: 32px 20px 80px; }
+  header h1 { font-size: 26px; margin: 0 0 4px; letter-spacing: -0.02em; }
+  header p { color: var(--muted); margin: 0 0 18px; }
+  .disclaimer {
+    background: #2a1f12; border: 1px solid #5a4422; color: #f3d9a8;
+    padding: 10px 14px; border-radius: 10px; font-size: 13px; margin-bottom: 22px;
+  }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 20px; margin-bottom: 18px; }
+  .drop {
+    border: 1.5px dashed var(--line); border-radius: 12px; padding: 26px; text-align: center;
+    transition: border-color .15s, background .15s; cursor: pointer; background: var(--panel2);
+  }
+  .drop.drag { border-color: var(--accent); background: #18223a; }
+  .drop strong { color: var(--text); }
+  .drop small { color: var(--muted); display: block; margin-top: 6px; }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 14px; }
+  button {
+    background: var(--accent); color: #fff; border: 0; border-radius: 10px; padding: 10px 16px;
+    font-size: 14px; font-weight: 600; cursor: pointer; transition: filter .15s;
+  }
+  button:hover { filter: brightness(1.08); }
+  button:disabled { opacity: .5; cursor: not-allowed; }
+  button.secondary { background: var(--panel2); border: 1px solid var(--line); color: var(--text); }
+  button.rec { background: #3a1f28; border: 1px solid #6e2b3a; color: #ffb3c1; }
+  button.rec.on { background: #f87171; color: #1a0d10; border-color: #f87171; }
+  .status { color: var(--muted); font-size: 13px; min-height: 18px; }
+  .filename { color: var(--accent); font-weight: 600; }
+  #results { display: none; }
+  .scoreWrap { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
+  .gauge { flex: 0 0 150px; }
+  .scoreMeta { flex: 1; min-width: 200px; }
+  .badge { display: inline-block; padding: 4px 12px; border-radius: 999px; font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: .04em; }
+  .badge.low { background: rgba(52,211,153,.15); color: var(--low); }
+  .badge.medium { background: rgba(251,191,36,.15); color: var(--medium); }
+  .badge.high { background: rgba(248,113,113,.15); color: var(--high); }
+  .explain { color: var(--muted); margin-top: 10px; }
+  h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 22px 0 10px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px,1fr)); gap: 10px; }
+  .metric { background: var(--panel2); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+  .metric .k { color: var(--muted); font-size: 12px; }
+  .metric .v { font-size: 17px; font-weight: 700; margin-top: 2px; }
+  .bar { height: 8px; background: var(--panel2); border-radius: 6px; overflow: hidden; margin-top: 4px; }
+  .bar > div { height: 100%; background: var(--accent); }
+  .emotion { margin-bottom: 8px; }
+  .emotion .lbl { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 3px; }
+  .transcript { background: var(--panel2); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; color: var(--text); }
+  .warn { background: #2a1f12; border: 1px solid #5a4422; color: #f3d9a8; border-radius: 10px; padding: 10px 14px; font-size: 13px; margin-top: 8px; }
+  details { margin-top: 18px; } summary { cursor: pointer; color: var(--muted); }
+  pre { background: #0a0e16; border: 1px solid var(--line); border-radius: 10px; padding: 14px; overflow: auto; font-size: 12px; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🎙️ Deception Analyzer</h1>
+    <p>Upload or record a voice clip to analyze acoustic stress &amp; deception indicators.</p>
+  </header>
+
+  <div class="disclaimer">
+    ⚠️ Voice-stress / acoustic “deception detection” is <strong>not scientifically validated</strong>.
+    Results are heuristic signal features only — do not use them as evidence or to judge anyone.
+  </div>
+
+  <div class="card">
+    <div id="drop" class="drop">
+      <strong>Drop a WAV file here</strong> or click to choose
+      <small>PCM 8/16/24-bit or 32-bit float · max 10 MB</small>
+      <input id="file" type="file" accept="audio/wav,audio/x-wav,.wav" hidden />
+    </div>
+    <div class="row">
+      <button id="analyzeBtn" disabled>Analyze</button>
+      <button id="recBtn" class="rec secondary">● Record mic</button>
+      <span id="status" class="status"></span>
+    </div>
+  </div>
+
+  <div id="results" class="card">
+    <div class="scoreWrap">
+      <svg class="gauge" viewBox="0 0 120 120" id="gauge">
+        <circle cx="60" cy="60" r="50" fill="none" stroke="#263041" stroke-width="12"/>
+        <circle id="gaugeArc" cx="60" cy="60" r="50" fill="none" stroke="#5b8cff" stroke-width="12"
+                stroke-linecap="round" transform="rotate(-90 60 60)" stroke-dasharray="314" stroke-dashoffset="314"/>
+        <text id="gaugeTxt" x="60" y="66" text-anchor="middle" font-size="26" font-weight="700" fill="#e6ebf2">0%</text>
+      </svg>
+      <div class="scoreMeta">
+        <span id="riskBadge" class="badge low">low</span>
+        <div class="explain" id="explain"></div>
+      </div>
+    </div>
+
+    <div id="transcriptWrap" style="display:none">
+      <h3>Transcription</h3>
+      <div class="transcript" id="transcript"></div>
+    </div>
+
+    <div id="emotionWrap" style="display:none">
+      <h3>Emotion (from transcript)</h3>
+      <div id="emotions"></div>
+    </div>
+
+    <h3>Deception factors</h3>
+    <div class="grid" id="factors"></div>
+
+    <h3>Acoustic features</h3>
+    <div class="grid" id="features"></div>
+
+    <div id="warnings"></div>
+
+    <details>
+      <summary>Raw JSON</summary>
+      <pre id="raw"></pre>
+    </details>
+  </div>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+let currentFile = null;
+
+const drop = $("drop"), fileInput = $("file"), analyzeBtn = $("analyzeBtn"), statusEl = $("status");
+drop.addEventListener("click", () => fileInput.click());
+drop.addEventListener("dragover", (e) => { e.preventDefault(); drop.classList.add("drag"); });
+drop.addEventListener("dragleave", () => drop.classList.remove("drag"));
+drop.addEventListener("drop", (e) => {
+  e.preventDefault(); drop.classList.remove("drag");
+  if (e.dataTransfer.files[0]) setFile(e.dataTransfer.files[0]);
+});
+fileInput.addEventListener("change", () => { if (fileInput.files[0]) setFile(fileInput.files[0]); });
+
+function setFile(f) {
+  currentFile = f;
+  drop.innerHTML = '<strong class="filename">' + f.name + '</strong><small>' + (f.size/1024).toFixed(0) + ' KB · ready to analyze</small>';
+  analyzeBtn.disabled = false;
+}
+
+analyzeBtn.addEventListener("click", analyze);
+async function analyze() {
+  if (!currentFile) return;
+  analyzeBtn.disabled = true; statusEl.textContent = "Analyzing… (transcription can take a few seconds)";
+  try {
+    const fd = new FormData(); fd.append("audio", currentFile);
+    const res = await fetch("/api/analyze", { method: "POST", body: fd });
+    const data = await res.json();
+    if (!res.ok || data.error) throw new Error(data.error || ("HTTP " + res.status));
+    render(data); statusEl.textContent = "Done.";
+  } catch (err) {
+    statusEl.textContent = "Error: " + err.message;
+  } finally {
+    analyzeBtn.disabled = false;
+  }
+}
+
+function metric(k, v) { return '<div class="metric"><div class="k">' + k + '</div><div class="v">' + v + '</div></div>'; }
+
+function render(d) {
+  $("results").style.display = "block";
+  const pct = Math.round((d.deceptionScore || 0) * 100);
+  const colors = { low: "#34d399", medium: "#fbbf24", high: "#f87171" };
+  const risk = d.riskLevel || "low";
+  const arc = $("gaugeArc");
+  arc.setAttribute("stroke", colors[risk]);
+  arc.setAttribute("stroke-dashoffset", String(314 - (314 * pct) / 100));
+  $("gaugeTxt").textContent = pct + "%";
+  const badge = $("riskBadge"); badge.className = "badge " + risk; badge.textContent = risk + " risk";
+  $("explain").textContent = d.explanation || "";
+
+  if (d.transcription) {
+    $("transcriptWrap").style.display = "block";
+    $("transcript").textContent = d.transcription;
+  } else { $("transcriptWrap").style.display = "none"; }
+
+  const emo = d.emotionalState || {};
+  const emoKeys = Object.keys(emo).sort((a,b) => emo[b]-emo[a]);
+  if (emoKeys.length) {
+    $("emotionWrap").style.display = "block";
+    $("emotions").innerHTML = emoKeys.map((k) => {
+      const v = Math.round(emo[k]*100);
+      return '<div class="emotion"><div class="lbl"><span>' + k + (k===d.dominantEmotion?" ★":"") + '</span><span>' + v + '%</span></div><div class="bar"><div style="width:' + v + '%"></div></div></div>';
+    }).join("");
+  } else { $("emotionWrap").style.display = "none"; }
+
+  const f = d.deceptionFactors || {};
+  $("factors").innerHTML = Object.keys(f).map((k) => metric(k.replace(/([A-Z])/g," $1"), Math.round(f[k]*100) + "%")).join("");
+
+  const af = d.audioFeatures || {};
+  const si = af.stressIndicators||{}, pa = af.pitchAnalysis||{}, pd = af.pauseDetection||{}, fm = af.formants||{}, sf = af.spectralFeatures||{};
+  $("features").innerHTML = [
+    metric("Mean F0", (pa.meanF0||0).toFixed(0) + " Hz"),
+    metric("F0 range", (pa.f0Range||0).toFixed(0) + " Hz"),
+    metric("Jitter", ((si.jitter||0)*100).toFixed(1) + "%"),
+    metric("Shimmer", ((si.shimmer||0)*100).toFixed(1) + "%"),
+    metric("Stress", ((si.stressScore||0)*100).toFixed(0) + "%"),
+    metric("Pauses", (pd.pauseCount||0) + ""),
+    metric("Speech rate", (pd.speechRate||0).toFixed(0) + " wpm"),
+    metric("F1 / F2", (fm.f1||0).toFixed(0) + " / " + (fm.f2||0).toFixed(0)),
+    metric("Centroid", (sf.spectralCentroid||0).toFixed(0) + " Hz"),
+    metric("ZCR", (sf.zcr||0).toFixed(0)),
+  ].join("");
+
+  $("warnings").innerHTML = (d.warnings||[]).map((w) => '<div class="warn">⚠️ ' + w + '</div>').join("");
+  $("raw").textContent = JSON.stringify(d, null, 2);
+  $("results").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+/* ---- Mic recording → WAV (16-bit PCM) ---- */
+const recBtn = $("recBtn");
+let mediaStream, audioCtx, processor, sourceNode, recChunks = [], recording = false, recRate = 44100;
+recBtn.addEventListener("click", async () => {
+  if (recording) { stopRec(); return; }
+  try {
+    mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    recRate = audioCtx.sampleRate;
+    sourceNode = audioCtx.createMediaStreamSource(mediaStream);
+    processor = audioCtx.createScriptProcessor(4096, 1, 1);
+    recChunks = [];
+    processor.onaudioprocess = (e) => recChunks.push(new Float32Array(e.inputBuffer.getChannelData(0)));
+    sourceNode.connect(processor); processor.connect(audioCtx.destination);
+    recording = true; recBtn.classList.add("on"); recBtn.textContent = "■ Stop";
+    statusEl.textContent = "Recording… click Stop when done.";
+  } catch (err) { statusEl.textContent = "Mic error: " + err.message; }
+});
+function stopRec() {
+  recording = false; recBtn.classList.remove("on"); recBtn.textContent = "● Record mic";
+  if (processor) processor.disconnect(); if (sourceNode) sourceNode.disconnect();
+  if (mediaStream) mediaStream.getTracks().forEach((t) => t.stop());
+  let len = recChunks.reduce((a, c) => a + c.length, 0);
+  const data = new Float32Array(len); let off = 0;
+  for (const c of recChunks) { data.set(c, off); off += c.length; }
+  const blob = encodeWAV(data, recRate);
+  setFile(new File([blob], "recording.wav", { type: "audio/wav" }));
+  statusEl.textContent = "Recorded " + (len/recRate).toFixed(1) + "s — ready to analyze.";
+}
+function encodeWAV(samples, rate) {
+  const buf = new ArrayBuffer(44 + samples.length * 2);
+  const v = new DataView(buf);
+  const str = (o, s) => { for (let i=0;i<s.length;i++) v.setUint8(o+i, s.charCodeAt(i)); };
+  str(0,"RIFF"); v.setUint32(4, 36 + samples.length*2, true); str(8,"WAVE"); str(12,"fmt ");
+  v.setUint32(16,16,true); v.setUint16(20,1,true); v.setUint16(22,1,true);
+  v.setUint32(24,rate,true); v.setUint32(28,rate*2,true); v.setUint16(32,2,true); v.setUint16(34,16,true);
+  str(36,"data"); v.setUint32(40, samples.length*2, true);
+  let o = 44;
+  for (let i=0;i<samples.length;i++,o+=2) { const s = Math.max(-1, Math.min(1, samples[i])); v.setInt16(o, s<0?s*0x8000:s*0x7fff, true); }
+  return new Blob([buf], { type: "audio/wav" });
+}
+</script>
+</body>
+</html>

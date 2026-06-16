@@ -1,15 +1,11 @@
 {
   "name": "deception-indicator-analyzer",
-  "compatibility_date": "2024-01-23",
-  "main": "index.js",
-  "no_bundle": true,
-  "compatibility_flags": [
-    "nodejs_compat"
-  ],
-  "assets": {
-    "directory": "./public"
-  },
+  "main": "src/index.ts",
+  "compatibility_date": "2026-01-23",
   "observability": {
     "enabled": true
-  }
+  },
+  "rules": [
+    { "type": "Text", "globs": ["**/*.html"], "fallthrough": true }
+  ]
 }
