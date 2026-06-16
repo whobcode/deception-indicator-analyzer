@@ -17,63 +17,50 @@
     color: var(--text); font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     min-height: 100vh;
   }
-  .wrap { max-width: 840px; margin: 0 auto; padding: 32px 20px 80px; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 32px 20px 80px; }
   header h1 { font-size: 26px; margin: 0 0 4px; letter-spacing: -0.02em; }
+  .tag { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em;
+    background: rgba(91,140,255,.16); color: var(--accent); padding: 3px 9px; border-radius: 999px; vertical-align: middle; margin-left: 8px; }
   header p { color: var(--muted); margin: 0 0 18px; }
-  .disclaimer {
-    background: #2a1f12; border: 1px solid #5a4422; color: #f3d9a8;
-    padding: 10px 14px; border-radius: 10px; font-size: 13px; margin-bottom: 22px;
-  }
+  .disclaimer { background: #2a1f12; border: 1px solid #5a4422; color: #f3d9a8; padding: 10px 14px; border-radius: 10px; font-size: 13px; margin-bottom: 22px; }
   .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 20px; margin-bottom: 18px; }
-  .drop {
-    border: 1.5px dashed var(--line); border-radius: 12px; padding: 26px; text-align: center;
-    transition: border-color .15s, background .15s; cursor: pointer; background: var(--panel2);
-  }
+  .drop { border: 1.5px dashed var(--line); border-radius: 12px; padding: 26px; text-align: center; transition: border-color .15s, background .15s; cursor: pointer; background: var(--panel2); }
   .drop.drag { border-color: var(--accent); background: #18223a; }
-  .drop strong { color: var(--text); }
-  .drop small { color: var(--muted); display: block; margin-top: 6px; }
-  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 14px; }
-  button {
-    background: var(--accent); color: #fff; border: 0; border-radius: 10px; padding: 10px 16px;
-    font-size: 14px; font-weight: 600; cursor: pointer; transition: filter .15s;
-  }
-  button:hover { filter: brightness(1.08); }
-  button:disabled { opacity: .5; cursor: not-allowed; }
-  button.secondary { background: var(--panel2); border: 1px solid var(--line); color: var(--text); }
-  button.rec { background: #3a1f28; border: 1px solid #6e2b3a; color: #ffb3c1; }
-  button.rec.on { background: #f87171; color: #1a0d10; border-color: #f87171; }
-  .status { color: var(--muted); font-size: 13px; min-height: 18px; }
+  .drop strong { color: var(--text); } .drop small { color: var(--muted); display: block; margin-top: 6px; }
   .filename { color: var(--accent); font-weight: 600; }
+  audio { width: 100%; margin-top: 14px; display: none; }
+  canvas.wave { width: 100%; height: 80px; margin-top: 12px; display: none; background: var(--panel2); border: 1px solid var(--line); border-radius: 10px; }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 14px; }
+  button { background: var(--accent); color: #fff; border: 0; border-radius: 10px; padding: 10px 16px; font-size: 14px; font-weight: 600; cursor: pointer; transition: filter .15s; }
+  button:hover { filter: brightness(1.08); } button:disabled { opacity: .5; cursor: not-allowed; }
+  button.secondary { background: var(--panel2); border: 1px solid var(--line); color: var(--text); }
+  button.rec.on { background: #f87171; color: #1a0d10; }
+  .status { color: var(--muted); font-size: 13px; min-height: 18px; }
   #results { display: none; }
   .scoreWrap { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
-  .gauge { flex: 0 0 150px; }
-  .scoreMeta { flex: 1; min-width: 200px; }
+  .gauge { flex: 0 0 150px; } .scoreMeta { flex: 1; min-width: 200px; }
   .badge { display: inline-block; padding: 4px 12px; border-radius: 999px; font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: .04em; }
-  .badge.low { background: rgba(52,211,153,.15); color: var(--low); }
-  .badge.medium { background: rgba(251,191,36,.15); color: var(--medium); }
-  .badge.high { background: rgba(248,113,113,.15); color: var(--high); }
+  .badge.low { background: rgba(52,211,153,.15); color: var(--low); } .badge.medium { background: rgba(251,191,36,.15); color: var(--medium); } .badge.high { background: rgba(248,113,113,.15); color: var(--high); }
+  .badge.ok { background: rgba(52,211,153,.15); color: var(--low); } .badge.bad { background: rgba(248,113,113,.15); color: var(--high); }
   .explain { color: var(--muted); margin-top: 10px; }
   h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 22px 0 10px; }
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px,1fr)); gap: 10px; }
   .metric { background: var(--panel2); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
-  .metric .k { color: var(--muted); font-size: 12px; }
-  .metric .v { font-size: 17px; font-weight: 700; margin-top: 2px; }
-  .bar { height: 8px; background: var(--panel2); border-radius: 6px; overflow: hidden; margin-top: 4px; }
-  .bar > div { height: 100%; background: var(--accent); }
-  .emotion { margin-bottom: 8px; }
-  .emotion .lbl { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 3px; }
-  .transcript { background: var(--panel2); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; color: var(--text); }
+  .metric .k { color: var(--muted); font-size: 12px; } .metric .v { font-size: 17px; font-weight: 700; margin-top: 2px; }
+  .bar { height: 8px; background: var(--panel2); border-radius: 6px; overflow: hidden; margin-top: 4px; } .bar > div { height: 100%; background: var(--accent); }
+  .emotion { margin-bottom: 8px; } .emotion .lbl { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 3px; }
+  .transcript { background: var(--panel2); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+  canvas.pitch { width: 100%; height: 140px; background: var(--panel2); border: 1px solid var(--line); border-radius: 10px; }
   .warn { background: #2a1f12; border: 1px solid #5a4422; color: #f3d9a8; border-radius: 10px; padding: 10px 14px; font-size: 13px; margin-top: 8px; }
   details { margin-top: 18px; } summary { cursor: pointer; color: var(--muted); }
   pre { background: #0a0e16; border: 1px solid var(--line); border-radius: 10px; padding: 14px; overflow: auto; font-size: 12px; }
-  a { color: var(--accent); }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <h1>🎙️ Deception Analyzer</h1>
-    <p>Upload or record a voice clip to analyze acoustic stress &amp; deception indicators.</p>
+    <h1>🎙️ Deception Analyzer <span class="tag">enhanced</span></h1>
+    <p>Upload any audio or record your voice — analyzed for acoustic stress &amp; deception indicators.</p>
   </header>
 
   <div class="disclaimer">
@@ -83,10 +70,12 @@
 
   <div class="card">
     <div id="drop" class="drop">
-      <strong>Drop a WAV file here</strong> or click to choose
-      <small>PCM 8/16/24-bit or 32-bit float · max 10 MB</small>
-      <input id="file" type="file" accept="audio/wav,audio/x-wav,.wav" hidden />
+      <strong>Drop an audio file here</strong> or click to choose
+      <small>any format — mp3, m4a, ogg, wav, flac… · auto-converted · max ~10 min</small>
+      <input id="file" type="file" accept="audio/*" hidden />
     </div>
+    <audio id="player" controls></audio>
+    <canvas id="wave" class="wave"></canvas>
     <div class="row">
       <button id="analyzeBtn" disabled>Analyze</button>
       <button id="recBtn" class="rec secondary">● Record mic</button>
@@ -96,7 +85,7 @@
 
   <div id="results" class="card">
     <div class="scoreWrap">
-      <svg class="gauge" viewBox="0 0 120 120" id="gauge">
+      <svg class="gauge" viewBox="0 0 120 120">
         <circle cx="60" cy="60" r="50" fill="none" stroke="#263041" stroke-width="12"/>
         <circle id="gaugeArc" cx="60" cy="60" r="50" fill="none" stroke="#5b8cff" stroke-width="12"
                 stroke-linecap="round" transform="rotate(-90 60 60)" stroke-dasharray="314" stroke-dashoffset="314"/>
@@ -108,6 +97,10 @@
       </div>
     </div>
 
+    <h3>Signal quality</h3>
+    <div class="grid" id="quality"></div>
+    <div id="qualityIssues"></div>
+
     <div id="transcriptWrap" style="display:none">
       <h3>Transcription</h3>
       <div class="transcript" id="transcript"></div>
@@ -118,6 +111,9 @@
       <div id="emotions"></div>
     </div>
 
+    <h3>Pitch contour (F0 over time)</h3>
+    <canvas id="pitch" class="pitch"></canvas>
+
     <h3>Deception factors</h3>
     <div class="grid" id="factors"></div>
 
@@ -125,115 +121,183 @@
     <div class="grid" id="features"></div>
 
     <div id="warnings"></div>
-
-    <details>
-      <summary>Raw JSON</summary>
-      <pre id="raw"></pre>
-    </details>
+    <details><summary>Raw JSON</summary><pre id="raw"></pre></details>
   </div>
 </div>
 
 <script>
 const $ = (id) => document.getElementById(id);
-let currentFile = null;
+const TARGET_RATE = 16000;
+let currentWav = null, currentSamples = null;
 
-const drop = $("drop"), fileInput = $("file"), analyzeBtn = $("analyzeBtn"), statusEl = $("status");
+const drop = $("drop"), fileInput = $("file"), analyzeBtn = $("analyzeBtn"), statusEl = $("status"), player = $("player");
 drop.addEventListener("click", () => fileInput.click());
 drop.addEventListener("dragover", (e) => { e.preventDefault(); drop.classList.add("drag"); });
 drop.addEventListener("dragleave", () => drop.classList.remove("drag"));
-drop.addEventListener("drop", (e) => {
-  e.preventDefault(); drop.classList.remove("drag");
-  if (e.dataTransfer.files[0]) setFile(e.dataTransfer.files[0]);
-});
-fileInput.addEventListener("change", () => { if (fileInput.files[0]) setFile(fileInput.files[0]); });
+drop.addEventListener("drop", (e) => { e.preventDefault(); drop.classList.remove("drag"); if (e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]); });
+fileInput.addEventListener("change", () => { if (fileInput.files[0]) loadFile(fileInput.files[0]); });
 
-function setFile(f) {
-  currentFile = f;
-  drop.innerHTML = '<strong class="filename">' + f.name + '</strong><small>' + (f.size/1024).toFixed(0) + ' KB · ready to analyze</small>';
-  analyzeBtn.disabled = false;
+async function loadFile(f) {
+  statusEl.textContent = "Decoding " + f.name + "…";
+  analyzeBtn.disabled = true;
+  try {
+    const { wav, samples } = await fileToWav(f);
+    currentWav = new File([wav], f.name.replace(/\.[^.]+$/, "") + ".wav", { type: "audio/wav" });
+    currentSamples = samples;
+    player.src = URL.createObjectURL(f); player.style.display = "block";
+    drawWave(samples);
+    const dur = (samples.length / TARGET_RATE).toFixed(1);
+    drop.innerHTML = '<strong class="filename">' + f.name + '</strong><small>' + dur + 's · ' + (wav.size/1024).toFixed(0) + ' KB (16kHz mono WAV) · ready</small>';
+    analyzeBtn.disabled = false;
+    statusEl.textContent = "Ready to analyze.";
+  } catch (err) { statusEl.textContent = "Couldn't decode audio: " + err.message; }
+}
+
+async function fileToWav(file) {
+  const buf = await file.arrayBuffer();
+  const Ctx = window.AudioContext || window.webkitAudioContext;
+  const ctx = new Ctx();
+  const audio = await ctx.decodeAudioData(buf);
+  const ch = audio.numberOfChannels, len = audio.length;
+  const mono = new Float32Array(len);
+  for (let c = 0; c < ch; c++) { const d = audio.getChannelData(c); for (let i = 0; i < len; i++) mono[i] += d[i] / ch; }
+  ctx.close();
+  const res = resample(mono, audio.sampleRate, TARGET_RATE);
+  return { wav: encodeWAV(res, TARGET_RATE), samples: res };
+}
+
+function resample(input, from, to) {
+  if (from === to) return input;
+  const ratio = from / to, outLen = Math.floor(input.length / ratio);
+  const out = new Float32Array(outLen);
+  for (let i = 0; i < outLen; i++) {
+    const pos = i * ratio, idx = Math.floor(pos), frac = pos - idx;
+    out[i] = (input[idx] || 0) * (1 - frac) + (input[idx + 1] || 0) * frac;
+  }
+  return out;
+}
+
+function encodeWAV(samples, rate) {
+  const buf = new ArrayBuffer(44 + samples.length * 2), v = new DataView(buf);
+  const str = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+  str(0,"RIFF"); v.setUint32(4, 36 + samples.length*2, true); str(8,"WAVE"); str(12,"fmt ");
+  v.setUint32(16,16,true); v.setUint16(20,1,true); v.setUint16(22,1,true);
+  v.setUint32(24,rate,true); v.setUint32(28,rate*2,true); v.setUint16(32,2,true); v.setUint16(34,16,true);
+  str(36,"data"); v.setUint32(40, samples.length*2, true);
+  let o = 44;
+  for (let i = 0; i < samples.length; i++, o += 2) { const s = Math.max(-1, Math.min(1, samples[i])); v.setInt16(o, s < 0 ? s*0x8000 : s*0x7fff, true); }
+  return new Blob([buf], { type: "audio/wav" });
+}
+
+function drawWave(samples) {
+  const c = $("wave"); c.style.display = "block";
+  const dpr = window.devicePixelRatio || 1, W = c.clientWidth, H = 80;
+  c.width = W * dpr; c.height = H * dpr; const g = c.getContext("2d"); g.scale(dpr, dpr);
+  g.clearRect(0,0,W,H); g.strokeStyle = "#5b8cff"; g.lineWidth = 1; g.beginPath();
+  const step = Math.max(1, Math.floor(samples.length / W));
+  for (let x = 0; x < W; x++) {
+    let min = 1, max = -1;
+    for (let j = 0; j < step; j++) { const s = samples[x*step + j] || 0; if (s < min) min = s; if (s > max) max = s; }
+    g.moveTo(x, (1 - (max+1)/2) * H); g.lineTo(x, (1 - (min+1)/2) * H);
+  }
+  g.stroke();
 }
 
 analyzeBtn.addEventListener("click", analyze);
 async function analyze() {
-  if (!currentFile) return;
+  if (!currentWav) return;
   analyzeBtn.disabled = true; statusEl.textContent = "Analyzing… (transcription can take a few seconds)";
   try {
-    const fd = new FormData(); fd.append("audio", currentFile);
+    const fd = new FormData(); fd.append("audio", currentWav);
     const res = await fetch("/api/analyze", { method: "POST", body: fd });
     const data = await res.json();
     if (!res.ok || data.error) throw new Error(data.error || ("HTTP " + res.status));
     render(data); statusEl.textContent = "Done.";
-  } catch (err) {
-    statusEl.textContent = "Error: " + err.message;
-  } finally {
-    analyzeBtn.disabled = false;
-  }
+  } catch (err) { statusEl.textContent = "Error: " + err.message; }
+  finally { analyzeBtn.disabled = false; }
 }
 
-function metric(k, v) { return '<div class="metric"><div class="k">' + k + '</div><div class="v">' + v + '</div></div>'; }
+const metric = (k, v) => '<div class="metric"><div class="k">' + k + '</div><div class="v">' + v + '</div></div>';
 
 function render(d) {
   $("results").style.display = "block";
-  const pct = Math.round((d.deceptionScore || 0) * 100);
-  const colors = { low: "#34d399", medium: "#fbbf24", high: "#f87171" };
-  const risk = d.riskLevel || "low";
-  const arc = $("gaugeArc");
-  arc.setAttribute("stroke", colors[risk]);
-  arc.setAttribute("stroke-dashoffset", String(314 - (314 * pct) / 100));
+  const pct = Math.round((d.deceptionScore||0)*100);
+  const colors = { low:"#34d399", medium:"#fbbf24", high:"#f87171" }, risk = d.riskLevel||"low";
+  const arc = $("gaugeArc"); arc.setAttribute("stroke", colors[risk]); arc.setAttribute("stroke-dashoffset", String(314 - 314*pct/100));
   $("gaugeTxt").textContent = pct + "%";
   const badge = $("riskBadge"); badge.className = "badge " + risk; badge.textContent = risk + " risk";
   $("explain").textContent = d.explanation || "";
 
-  if (d.transcription) {
-    $("transcriptWrap").style.display = "block";
-    $("transcript").textContent = d.transcription;
-  } else { $("transcriptWrap").style.display = "none"; }
+  const q = d.signalQuality || {};
+  $("quality").innerHTML = [
+    metric("Duration", (q.durationSec||0).toFixed(1) + " s"),
+    metric("Peak level", Math.round((q.peak||0)*100) + "%"),
+    metric("RMS", Math.round((q.rms||0)*100) + "%"),
+    metric("Clipping", ((q.clippingRatio||0)*100).toFixed(1) + "%"),
+    metric("Silence", Math.round((q.silenceRatio||0)*100) + "%"),
+    '<div class="metric"><div class="k">Analyzable</div><div class="v"><span class="badge ' + (q.analyzable?"ok":"bad") + '">' + (q.analyzable?"yes":"poor") + '</span></div></div>',
+  ].join("");
+  $("qualityIssues").innerHTML = (q.issues||[]).map((w) => '<div class="warn">⚠️ ' + w + '</div>').join("");
 
-  const emo = d.emotionalState || {};
-  const emoKeys = Object.keys(emo).sort((a,b) => emo[b]-emo[a]);
-  if (emoKeys.length) {
+  if (d.transcription) { $("transcriptWrap").style.display = "block"; $("transcript").textContent = d.transcription; }
+  else $("transcriptWrap").style.display = "none";
+
+  const emo = d.emotionalState || {}, ek = Object.keys(emo).sort((a,b)=>emo[b]-emo[a]);
+  if (ek.length) {
     $("emotionWrap").style.display = "block";
-    $("emotions").innerHTML = emoKeys.map((k) => {
-      const v = Math.round(emo[k]*100);
-      return '<div class="emotion"><div class="lbl"><span>' + k + (k===d.dominantEmotion?" ★":"") + '</span><span>' + v + '%</span></div><div class="bar"><div style="width:' + v + '%"></div></div></div>';
-    }).join("");
-  } else { $("emotionWrap").style.display = "none"; }
+    $("emotions").innerHTML = ek.map((k) => { const v = Math.round(emo[k]*100);
+      return '<div class="emotion"><div class="lbl"><span>' + k + (k===d.dominantEmotion?" ★":"") + '</span><span>' + v + '%</span></div><div class="bar"><div style="width:' + v + '%"></div></div></div>'; }).join("");
+  } else $("emotionWrap").style.display = "none";
+
+  drawPitch(d.timeline || {});
 
   const f = d.deceptionFactors || {};
-  $("factors").innerHTML = Object.keys(f).map((k) => metric(k.replace(/([A-Z])/g," $1"), Math.round(f[k]*100) + "%")).join("");
+  $("factors").innerHTML = Object.keys(f).map((k) => metric(k.replace(/([A-Z])/g," $1"), Math.round(f[k]*100)+"%")).join("");
 
-  const af = d.audioFeatures || {};
-  const si = af.stressIndicators||{}, pa = af.pitchAnalysis||{}, pd = af.pauseDetection||{}, fm = af.formants||{}, sf = af.spectralFeatures||{};
+  const af = d.audioFeatures||{}, si=af.stressIndicators||{}, pa=af.pitchAnalysis||{}, pd=af.pauseDetection||{}, fm=af.formants||{}, sf=af.spectralFeatures||{};
   $("features").innerHTML = [
-    metric("Mean F0", (pa.meanF0||0).toFixed(0) + " Hz"),
-    metric("F0 range", (pa.f0Range||0).toFixed(0) + " Hz"),
-    metric("Jitter", ((si.jitter||0)*100).toFixed(1) + "%"),
-    metric("Shimmer", ((si.shimmer||0)*100).toFixed(1) + "%"),
-    metric("Stress", ((si.stressScore||0)*100).toFixed(0) + "%"),
-    metric("Pauses", (pd.pauseCount||0) + ""),
-    metric("Speech rate", (pd.speechRate||0).toFixed(0) + " wpm"),
-    metric("F1 / F2", (fm.f1||0).toFixed(0) + " / " + (fm.f2||0).toFixed(0)),
-    metric("Centroid", (sf.spectralCentroid||0).toFixed(0) + " Hz"),
-    metric("ZCR", (sf.zcr||0).toFixed(0)),
+    metric("Mean F0", (pa.meanF0||0).toFixed(0)+" Hz"), metric("F0 range", (pa.f0Range||0).toFixed(0)+" Hz"),
+    metric("Jitter", ((si.jitter||0)*100).toFixed(1)+"%"), metric("Shimmer", ((si.shimmer||0)*100).toFixed(1)+"%"),
+    metric("Stress", ((si.stressScore||0)*100).toFixed(0)+"%"), metric("Pauses", (pd.pauseCount||0)+""),
+    metric("Speech rate", (pd.speechRate||0).toFixed(0)+" wpm"), metric("F1 / F2", (fm.f1||0).toFixed(0)+" / "+(fm.f2||0).toFixed(0)),
+    metric("Centroid", (sf.spectralCentroid||0).toFixed(0)+" Hz"), metric("ZCR", (sf.zcr||0).toFixed(0)),
   ].join("");
 
-  $("warnings").innerHTML = (d.warnings||[]).map((w) => '<div class="warn">⚠️ ' + w + '</div>').join("");
+  $("warnings").innerHTML = (d.warnings||[]).map((w)=>'<div class="warn">⚠️ '+w+'</div>').join("");
   $("raw").textContent = JSON.stringify(d, null, 2);
-  $("results").scrollIntoView({ behavior: "smooth", block: "start" });
+  $("results").scrollIntoView({ behavior:"smooth", block:"start" });
 }
 
-/* ---- Mic recording → WAV (16-bit PCM) ---- */
+function drawPitch(tl) {
+  const pts = tl.pitchContourHz || [];
+  const c = $("pitch"); const dpr = window.devicePixelRatio||1, W = c.clientWidth, H = 140;
+  c.width = W*dpr; c.height = H*dpr; const g = c.getContext("2d"); g.scale(dpr,dpr);
+  g.clearRect(0,0,W,H);
+  const maxHz = 400, pad = 6;
+  g.strokeStyle = "#263041"; g.lineWidth = 1;
+  [100,200,300].forEach((hz) => { const y = H - pad - (hz/maxHz)*(H-2*pad); g.beginPath(); g.moveTo(0,y); g.lineTo(W,y); g.stroke();
+    g.fillStyle = "#8b98ad"; g.font = "10px sans-serif"; g.fillText(hz+"Hz", 4, y-2); });
+  if (!pts.length) { g.fillStyle = "#8b98ad"; g.fillText("no voiced frames", W/2-40, H/2); return; }
+  g.strokeStyle = "#5b8cff"; g.lineWidth = 2; let drawing = false;
+  for (let i = 0; i < pts.length; i++) {
+    const v = pts[i]; const x = (i/(Math.max(pts.length-1,1)))*W;
+    if (v <= 0) { drawing = false; continue; }
+    const y = H - pad - (Math.min(v,maxHz)/maxHz)*(H-2*pad);
+    if (!drawing) { g.beginPath(); g.moveTo(x,y); drawing = true; } else g.lineTo(x,y);
+  }
+  g.stroke();
+}
+
+/* ---- Mic recording → WAV ---- */
 const recBtn = $("recBtn");
 let mediaStream, audioCtx, processor, sourceNode, recChunks = [], recording = false, recRate = 44100;
 recBtn.addEventListener("click", async () => {
-  if (recording) { stopRec(); return; }
+  if (recording) return stopRec();
   try {
-    mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    recRate = audioCtx.sampleRate;
+    mediaStream = await navigator.mediaDevices.getUserMedia({ audio:true });
+    audioCtx = new (window.AudioContext||window.webkitAudioContext)(); recRate = audioCtx.sampleRate;
     sourceNode = audioCtx.createMediaStreamSource(mediaStream);
-    processor = audioCtx.createScriptProcessor(4096, 1, 1);
-    recChunks = [];
+    processor = audioCtx.createScriptProcessor(4096,1,1); recChunks = [];
     processor.onaudioprocess = (e) => recChunks.push(new Float32Array(e.inputBuffer.getChannelData(0)));
     sourceNode.connect(processor); processor.connect(audioCtx.destination);
     recording = true; recBtn.classList.add("on"); recBtn.textContent = "■ Stop";
@@ -243,25 +307,17 @@ recBtn.addEventListener("click", async () => {
 function stopRec() {
   recording = false; recBtn.classList.remove("on"); recBtn.textContent = "● Record mic";
   if (processor) processor.disconnect(); if (sourceNode) sourceNode.disconnect();
-  if (mediaStream) mediaStream.getTracks().forEach((t) => t.stop());
-  let len = recChunks.reduce((a, c) => a + c.length, 0);
-  const data = new Float32Array(len); let off = 0;
+  if (mediaStream) mediaStream.getTracks().forEach((t)=>t.stop());
+  let len = recChunks.reduce((a,c)=>a+c.length,0); const data = new Float32Array(len); let off = 0;
   for (const c of recChunks) { data.set(c, off); off += c.length; }
-  const blob = encodeWAV(data, recRate);
-  setFile(new File([blob], "recording.wav", { type: "audio/wav" }));
-  statusEl.textContent = "Recorded " + (len/recRate).toFixed(1) + "s — ready to analyze.";
-}
-function encodeWAV(samples, rate) {
-  const buf = new ArrayBuffer(44 + samples.length * 2);
-  const v = new DataView(buf);
-  const str = (o, s) => { for (let i=0;i<s.length;i++) v.setUint8(o+i, s.charCodeAt(i)); };
-  str(0,"RIFF"); v.setUint32(4, 36 + samples.length*2, true); str(8,"WAVE"); str(12,"fmt ");
-  v.setUint32(16,16,true); v.setUint16(20,1,true); v.setUint16(22,1,true);
-  v.setUint32(24,rate,true); v.setUint32(28,rate*2,true); v.setUint16(32,2,true); v.setUint16(34,16,true);
-  str(36,"data"); v.setUint32(40, samples.length*2, true);
-  let o = 44;
-  for (let i=0;i<samples.length;i++,o+=2) { const s = Math.max(-1, Math.min(1, samples[i])); v.setInt16(o, s<0?s*0x8000:s*0x7fff, true); }
-  return new Blob([buf], { type: "audio/wav" });
+  const samples = resample(data, recRate, TARGET_RATE);
+  currentWav = new File([encodeWAV(samples, TARGET_RATE)], "recording.wav", { type:"audio/wav" });
+  currentSamples = samples;
+  player.src = URL.createObjectURL(currentWav); player.style.display = "block";
+  drawWave(samples);
+  drop.innerHTML = '<strong class="filename">recording.wav</strong><small>' + (samples.length/TARGET_RATE).toFixed(1) + 's · ready to analyze</small>';
+  analyzeBtn.disabled = false;
+  statusEl.textContent = "Recorded — ready to analyze.";
 }
 </script>
 </body>

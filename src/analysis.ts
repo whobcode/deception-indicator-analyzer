@@ -1,6 +1,11 @@
 /** Shared analysis pipeline used by both the REST endpoint and the MCP tool. */
 
-import { AudioAnalyzer, type AudioFeatures } from "./audio-analyzer";
+import {
+  AudioAnalyzer,
+  type AudioFeatures,
+  type SignalQuality,
+  type Timeline,
+} from "./audio-analyzer";
 import {
   calculateDeceptionFactors,
   computeDeceptionScore,
@@ -17,6 +22,8 @@ const analyzer = new AudioAnalyzer();
 
 export interface AnalysisResult {
   audioFeatures: AudioFeatures;
+  signalQuality: SignalQuality;
+  timeline: Timeline;
   emotionalState: Record<string, number>;
   dominantEmotion: string;
   deceptionScore: number;
@@ -51,7 +58,10 @@ export function fromBase64(b64: string): Uint8Array {
  */
 export async function runAnalysis(buffer: ArrayBuffer, env: Env): Promise<AnalysisResult> {
   const { samples, sampleRate } = analyzer.decodeWav(buffer);
-  const audioFeatures = analyzer.extractFeatures(samples, sampleRate);
+  const { features: audioFeatures, signalQuality, timeline } = analyzer.extractAll(
+    samples,
+    sampleRate,
+  );
 
   const warnings: string[] = [];
   let emotionRaw: unknown = null;
@@ -84,8 +94,14 @@ export async function runAnalysis(buffer: ArrayBuffer, env: Env): Promise<Analys
   const deceptionFactors = calculateDeceptionFactors(audioFeatures);
   const deceptionScore = computeDeceptionScore(deceptionFactors);
 
+  if (!signalQuality.analyzable) {
+    warnings.unshift("Low-quality clip — acoustic metrics may be unreliable.");
+  }
+
   return {
     audioFeatures,
+    signalQuality,
+    timeline,
     emotionalState: emotionScores,
     dominantEmotion,
     deceptionScore,

@@ -42,8 +42,32 @@ export interface AudioFeatures {
   };
 }
 
+export interface SignalQuality {
+  durationSec: number;
+  peak: number;
+  rms: number;
+  clippingRatio: number;
+  silenceRatio: number;
+  analyzable: boolean;
+  issues: string[];
+}
+
+export interface Timeline {
+  /** Per-frame fundamental-frequency estimates (Hz), downsampled for plotting. */
+  pitchContourHz: number[];
+  /** Pitch points per second of audio. */
+  frameRateHz: number;
+}
+
+export interface FullAnalysis {
+  features: AudioFeatures;
+  signalQuality: SignalQuality;
+  timeline: Timeline;
+}
+
 const PITCH_FRAME = 1024;
 const PITCH_HOP = 512;
+const MAX_CONTOUR_POINTS = 320;
 
 export class AudioAnalyzer {
   decodeWav(buffer: ArrayBuffer): DecodedAudio {
@@ -122,12 +146,69 @@ export class AudioAnalyzer {
   extractFeatures(samples: Float32Array, sampleRate: number): AudioFeatures {
     const pitchValues = this.detectPitch(samples, sampleRate);
     const spectrum = averageSpectrum(samples);
+    return this.buildFeatures(samples, sampleRate, pitchValues, spectrum);
+  }
+
+  /** Full pass: features + signal quality + pitch-contour timeline (one pitch pass). */
+  extractAll(samples: Float32Array, sampleRate: number): FullAnalysis {
+    const pitchValues = this.detectPitch(samples, sampleRate);
+    const spectrum = averageSpectrum(samples);
+    return {
+      features: this.buildFeatures(samples, sampleRate, pitchValues, spectrum),
+      signalQuality: this.signalQuality(samples, sampleRate),
+      timeline: {
+        pitchContourHz: downsample(pitchValues, MAX_CONTOUR_POINTS),
+        frameRateHz: sampleRate / PITCH_HOP,
+      },
+    };
+  }
+
+  private buildFeatures(
+    samples: Float32Array,
+    sampleRate: number,
+    pitchValues: number[],
+    spectrum: Float32Array,
+  ): AudioFeatures {
     return {
       stressIndicators: this.analyzeStress(samples, pitchValues, spectrum),
       pitchAnalysis: this.analyzePitch(pitchValues, sampleRate),
       pauseDetection: this.detectPauses(samples, sampleRate),
       formants: this.extractFormants(samples, sampleRate),
       spectralFeatures: this.extractSpectralFeatures(samples, sampleRate, spectrum),
+    };
+  }
+
+  /** Cheap signal-quality / suitability check over the raw samples. */
+  signalQuality(samples: Float32Array, sampleRate: number): SignalQuality {
+    const n = samples.length || 1;
+    let peak = 0;
+    let sumSq = 0;
+    let clip = 0;
+    let silent = 0;
+    for (let i = 0; i < samples.length; i++) {
+      const a = Math.abs(samples[i]);
+      if (a > peak) peak = a;
+      sumSq += samples[i] * samples[i];
+      if (a >= 0.99) clip++;
+      if (a < 0.01) silent++;
+    }
+    const durationSec = samples.length / sampleRate;
+    const clippingRatio = clip / n;
+    const silenceRatio = silent / n;
+    const issues: string[] = [];
+    if (durationSec < 0.5) issues.push("Clip is very short (<0.5s) — results are unreliable.");
+    if (peak < 0.05) issues.push("Signal level is very low — recording may be too quiet.");
+    if (clippingRatio > 0.01) issues.push("Audio is clipping (distorted peaks).");
+    if (silenceRatio > 0.9) issues.push("Recording is mostly silence.");
+    const analyzable = durationSec >= 0.3 && peak >= 0.02 && silenceRatio < 0.98;
+    return {
+      durationSec,
+      peak,
+      rms: Math.sqrt(sumSq / n),
+      clippingRatio,
+      silenceRatio,
+      analyzable,
+      issues,
     };
   }
 
@@ -378,4 +459,19 @@ export class AudioAnalyzer {
     }
     throw new Error(`WAV chunk not found: ${chunkId}`);
   }
+}
+
+/** Downsample an array to at most `max` points by block averaging (for plotting). */
+function downsample(arr: number[], max: number): number[] {
+  if (arr.length <= max) return arr.map((v) => Math.round(v * 10) / 10);
+  const out: number[] = [];
+  const block = arr.length / max;
+  for (let i = 0; i < max; i++) {
+    const start = Math.floor(i * block);
+    const end = Math.floor((i + 1) * block);
+    let sum = 0;
+    for (let j = start; j < end; j++) sum += arr[j];
+    out.push(Math.round((sum / Math.max(end - start, 1)) * 10) / 10);
+  }
+  return out;
 }
